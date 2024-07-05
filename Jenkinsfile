@@ -5,12 +5,21 @@ pipeline {
         NODE_VERSION = '18.12.1'
         DOCKER_IMAGE = 'ishmumr7/jom-tapau'
         DOCKER_TAG = 'latest'
+        SSH_PRIVATE_KEY = credentials('9ebe7d16-982e-4607-99ac-a342a42d85a3')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', url: 'git@github.com:ishmumr7/jom-tapau.git'
+                withCredentials([sshUserPrivateKey(credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', keyFileVariable: 'SSH_KEY')]) {
+                    sh '''
+                        mkdir -p ~/.ssh
+                        echo "$SSH_KEY" > ~/.ssh/id_ed25519
+                        chmod 600 ~/.ssh/id_ed25519
+                        ssh -o StrictHostKeyChecking=no git@github.com || true
+                    '''
+                }
+                git url: 'git@github.com:ishmumr7/jom-tapau.git', credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3'
             }
         }
 
@@ -42,7 +51,6 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image
                     sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
@@ -52,17 +60,15 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: 'docker', url: '']) {
-                        // Push Docker image to Docker Hub
                         sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
             }
         }
-        
+
         stage('Clean Up') {
             steps {
                 script {
-                    // Remove Docker image locally to free up space
                     sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
