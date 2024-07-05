@@ -12,7 +12,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 withCredentials([sshUserPrivateKey(credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', keyFileVariable: 'SSH_KEY')]) {
-                    sh '''
+                    powershell '''
                         mkdir -p ~/.ssh
                         echo "$SSH_KEY" > ~/.ssh/id_ed25519
                         chmod 600 ~/.ssh/id_ed25519
@@ -25,33 +25,36 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                tool name: "node-${NODE_VERSION}", type: 'NodeJS'
-                sh 'npm install'
+                script {
+                    def nodeTool = tool name: "node-${NODE_VERSION}", type: 'NodeJS'
+                    env.PATH = "${nodeTool}/bin:${env.PATH}"
+                }
+                powershell 'npm install'
             }
         }
 
         stage('Lint') {
             steps {
-                sh 'npm run lint'
+                powershell 'npm run lint'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'npm test'
+                powershell 'npm test'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                powershell 'npm run build'
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    powershell "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 }
             }
         }
@@ -60,7 +63,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: 'docker', url: '']) {
-                        sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                        powershell "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
             }
@@ -69,7 +72,7 @@ pipeline {
         stage('Clean Up') {
             steps {
                 script {
-                    sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                    powershell "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
