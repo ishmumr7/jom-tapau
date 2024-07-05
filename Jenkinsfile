@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', url: 'https://github.com/ishmumr7/jom-tapau.git', branch: 'main',
+                git credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', url: 'https://github.com/ishmumr7/jom-tapau.git',
             }
         }
         
