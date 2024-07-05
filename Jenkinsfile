@@ -2,9 +2,13 @@ pipeline {
     agent any
 
     environment {
-        // NODE_VERSION is not needed if NodeJS is installed on the agent
+        NODE_VERSION = '18.12.1'
         DOCKER_IMAGE = 'ishmumr7/jom-tapau'
         DOCKER_TAG = 'latest'
+    }
+
+    tools {
+        nodejs "node-${NODE_VERSION}"
     }
 
     stages {
