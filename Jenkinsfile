@@ -14,9 +14,14 @@ pipeline {
             }
         }
         
-        stage('Install Dependencies') {
+        stage('Install NodeJS') {
             steps {
                 tool name: "node-${NODE_VERSION}", type: 'NodeJS'
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
                 sh 'npm install'
             }
         }
