@@ -7,19 +7,16 @@ pipeline {
         DOCKER_TAG = 'latest'
     }
     
-    tools {
-        nodejs "node-${NODE_VERSION}"
-    }
-    
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', url: 'https://github.com/ishmumr7/jom-tapau.git',
+                git credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', url: 'https://github.com/ishmumr7/jom-tapau.git', branch: 'main'
             }
         }
         
         stage('Install Dependencies') {
             steps {
+                tool name: "node-${NODE_VERSION}", type: 'NodeJS'
                 sh 'npm install'
             }
         }
