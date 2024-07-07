@@ -16,7 +16,7 @@ pipeline {
         
         stage('Install NodeJS') {
             steps {
-                tool name: "node-${NODE_VERSION}", type: 'NodeJS'
+                tool name: "node", type: 'NodeJS'
             }
         }
         
