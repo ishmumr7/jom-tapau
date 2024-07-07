@@ -1,12 +1,12 @@
 pipeline {
     agent any
     tools {
-        nodejs 'node' // Ensure this matches the name configured in Jenkins
+        nodejs 'node' 
     }
     stages {
         stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/ishmumr7/jom-tapau']]])
+                git branch: 'main', credentialsId: '9ebe7d16-982e-4607-99ac-a342a42d85a3', url: 'https://github.com/ishmumr7/jom-tapau'
             }
         }
         stage('Install Dependencies') {
