@@ -11,18 +11,18 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
         stage('Build React App') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh 'docker build -t ishmumr7/jom-tapau .'
+                    bat 'docker build -t ishmumr7/jom-tapau .'
                 }
             }
         }
@@ -30,16 +30,17 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'docker', variable: 'dockerhubpwd')]) {
-                        sh 'docker login -u ishmumr7 -p ${dockerhubpwd}'
+                        bat 'docker login -u ishmumr7 -p %dockerhubpwd%'
                     }
-                    sh 'docker push ishmumr7/jom-tapau'
+                    bat 'docker push ishmumr7/jom-tapau'
                 }
             }
         }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    kubernetesDeploy configs: 'deploymentservice.yaml', kubeconfigId: 'k8sconfig'
+                    // Make sure kubectl is installed and configured in the Jenkins environment
+                    bat 'kubectl apply -f deploymentservice.yaml --kubeconfig=%k8sconfig%'
                 }
             }
         }
