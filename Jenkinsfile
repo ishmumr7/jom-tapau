@@ -14,7 +14,28 @@ pipeline {
                 bat 'npm install --force'
             }
         }
-
+        stage('Build') {
+            steps {
+                bat 'npm install --force'
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    bat 'docker build -t ishmumr7/jom-tapau .'
+                }
+            }
+        }
+        stage('Push Image to Hub') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker') {
+                        bat 'docker tag jom-tapau-image/demo:latest ishmumr7/jom-tapau:latest'
+                        bat 'docker push ishmumr7/jom-tapau:latest'
+                    }
+                }
+            }
+        }
 
         // stage('Install Dependencies') {
         //     steps {
