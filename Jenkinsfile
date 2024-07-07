@@ -30,8 +30,8 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker') {
-                        bat 'docker tag jom-tapau-image/demo:latest ishmumr7/jom-tapau:latest'
-                        bat 'docker push ishmumr7/jom-tapau:latest'
+                        bat 'docker tag ishmumr7/jom-tapau:latest ishmumr7/jom-tapau-image:latest'
+                        bat 'docker push ishmumr7/jom-tapau-image:latest'
                     }
                 }
             }
